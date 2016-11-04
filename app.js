@@ -14,17 +14,19 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 //app.use(express.urlencoded()); // to support URL-encoded bodies
 
 app.get('/setup', function (req, res) {
-  db.run('CREATE TABLE pings (time DATETIME)')
+  db.run('CREATE TABLE pings (time INT, latitude REAL, longitude REAL, speed REAL)')
   res.send('setup!')
 })
 
 app.post('/ping', function (req, res) {
 
   console.log(req.body)
-  db.serialize(function () {
-    db.run("INSERT INTO pings VALUES (datetime('now'))")
-    db.all('SELECT time FROM pings', function (err, row) {
-      console.log(row)
+  req.body.locations.each(function(location){
+    db.serialize(function () {
+      db.run("INSERT INTO pings VALUES (" + location.time, + "," + location.latitude, + "," + location.longitude, + "," + location.speed + ")")
+      db.all('SELECT time FROM pings', function (err, row) {
+        console.log(row)
+      })
     })
   })
   res.send('ping!')
