@@ -4,6 +4,14 @@ var app = express()
 var sqlite3 = require('sqlite3').verbose()
 var db = new sqlite3.Database('pingDB.db')
 
+var bodyParser = require('body-parser')
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
+
+//app.use(express.json());       // to support JSON-encoded bodies
+//app.use(express.urlencoded()); // to support URL-encoded bodies
 
 app.get('/setup', function (req, res) {
   db.run('CREATE TABLE pings (time DATETIME)')
@@ -11,7 +19,8 @@ app.get('/setup', function (req, res) {
 })
 
 app.post('/ping', function (req, res) {
-  console.log(req)
+
+  console.log(req.body)
   db.serialize(function () {
     db.run("INSERT INTO pings VALUES (datetime('now'))")
     db.all('SELECT time FROM pings', function (err, row) {
