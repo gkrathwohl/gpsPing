@@ -6,27 +6,19 @@ var db = new sqlite3.Database('pingDB.db')
 
 
 app.get('/setup', function (req, res) {
-  
   db.run('CREATE TABLE pings (time DATETIME)')
   res.send('setup!')
 })
 
-app.get('/ping', function (req, res) {
-
+app.post('/ping', function (req, res) {
+  console.log(req)
   db.serialize(function () {
-    
-    
     db.run("INSERT INTO pings VALUES (datetime('now'))")
-
     db.all('SELECT time FROM pings', function (err, row) {
       console.log(row)
     })
   })
-
-  //db.close()
-
   res.send('ping!')
-
 })
 
 app.get('/', function (req, res) {
